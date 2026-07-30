@@ -1,20 +1,47 @@
-// MA-CodeEngine.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <cctype>
+#include <string>
+#include <iomanip>
+
+std::string ReadText(const std::string& Msg)
+{
+	std::string Text;
+	std::cout << Msg << ": ";
+	std::getline(std::cin, Text);
+
+	return Text;
+}
+
+
+short CountEachWordInstring(std::string Text)
+{
+	std::string delimt = " ";
+	std::string sWord;
+	short Pos = 0;
+	short Counter = 0;
+
+	while ((Pos = Text.find(delimt)) != std::string::npos)
+	{
+		sWord = Text.substr(0, Pos);
+		if (sWord != "")
+		{
+			Counter++;
+		}
+		Text.erase(0, Pos + delimt.length());
+	}
+
+	if (Text != "")
+	{
+		Counter++;
+	}
+	return Counter;
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	std::string Text;
+	Text = ReadText("Enter any text");
+	std::cout << "\nThe number of words in your string: ";
+	std::cout << CountEachWordInstring(Text) << std::endl;
+	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
