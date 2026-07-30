@@ -2,6 +2,7 @@
 #include <cctype>
 #include <string>
 #include <iomanip>
+#include <vector>
 
 std::string ReadText(const std::string& Msg)
 {
@@ -12,36 +13,47 @@ std::string ReadText(const std::string& Msg)
 	return Text;
 }
 
-
-short CountEachWordInstring(std::string Text)
+std::vector <std::string> Split(std::string Text, std::string delimt)
 {
-	std::string delimt = " ";
-	std::string sWord;
 	short Pos = 0;
-	short Counter = 0;
-
+	std::string sWord;
+	std::vector <std::string> Tokens;
 	while ((Pos = Text.find(delimt)) != std::string::npos)
 	{
 		sWord = Text.substr(0, Pos);
 		if (sWord != "")
 		{
-			Counter++;
+			Tokens.push_back(sWord);
 		}
 		Text.erase(0, Pos + delimt.length());
 	}
 
-	if (Text != "")
+	if (Text != delimt)
 	{
-		Counter++;
+		Tokens.push_back(Text);
 	}
-	return Counter;
+	return Tokens;
+}
+
+void PrintVector(std::vector <std::string> Content)
+{
+	for (std::string& Token : Content)
+	{
+		std::cout << Token << "\n";
+	}
 }
 
 int main()
 {
 	std::string Text;
 	Text = ReadText("Enter any text");
-	std::cout << "\nThe number of words in your string: ";
-	std::cout << CountEachWordInstring(Text) << std::endl;
+	std::vector <std::string> Content;
+
+	Content = Split(Text, ",");
+	std::cout << "\nTokens = " << Content.size() << "\n";
+	PrintVector(Content);
+
+	
+
 	return 0;
 }
