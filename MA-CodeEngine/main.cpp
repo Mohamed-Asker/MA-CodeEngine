@@ -2,7 +2,7 @@
 #include <cctype>
 #include <string>
 #include <iomanip>
-#include <vector>
+
 
 std::string ReadText(const std::string& Msg)
 {
@@ -13,47 +13,44 @@ std::string ReadText(const std::string& Msg)
 	return Text;
 }
 
-std::vector <std::string> Split(std::string Text, std::string delimt)
+std::string TrimLeft(std::string Text)
 {
-	short Pos = 0;
-	std::string sWord;
-	std::vector <std::string> Tokens;
-	while ((Pos = Text.find(delimt)) != std::string::npos)
+	for (int i = 0; i < Text.length(); i++)
 	{
-		sWord = Text.substr(0, Pos);
-		if (sWord != "")
+		if (Text[i] != ' ')
 		{
-			Tokens.push_back(sWord);
+			return Text.substr(i, Text.length() - 1);
 		}
-		Text.erase(0, Pos + delimt.length());
 	}
-
-	if (Text != delimt)
-	{
-		Tokens.push_back(Text);
-	}
-	return Tokens;
+	return "";
 }
 
-void PrintVector(std::vector <std::string> Content)
+std::string TrimRight(std::string Text)
 {
-	for (std::string& Token : Content)
+	for (int i = Text.length() - 1; i >= 0; i--)
 	{
-		std::cout << Token << "\n";
+		if (Text[i] != ' ')
+		{
+			return Text.substr(0, i + 1);
+		}
 	}
+	return "";
 }
+
+std::string Trim(std::string Text)
+{
+	return TrimRight(TrimLeft(Text));
+}
+
 
 int main()
 {
 	std::string Text;
-	Text = ReadText("Enter any text");
-	std::vector <std::string> Content;
+	Text = "    Mohamed Askar    ";
 
-	Content = Split(Text, ",");
-	std::cout << "\nTokens = " << Content.size() << "\n";
-	PrintVector(Content);
-
+	std::cout << std::left << std::setw(15) << "Trim left" << ": " << TrimLeft(Text) << "|\n";
+	std::cout << std::left << std::setw(15) << "Trim rigth" << ": " << TrimRight(Text) << "|\n";
+	std::cout << std::left << std::setw(15) << "Trim" << ": " << Trim(Text) << "|\n";
 	
-
 	return 0;
 }
