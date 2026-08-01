@@ -1,7 +1,9 @@
+//My Solution
 #include <iostream>
 #include <cctype>
 #include <string>
 #include <iomanip>
+#include <vector>
 
 
 std::string ReadText(const std::string& Msg)
@@ -13,44 +15,31 @@ std::string ReadText(const std::string& Msg)
 	return Text;
 }
 
-std::string TrimLeft(std::string Text)
+std::string JoinString(std::vector <std::string> vTokens,const  std::string& delimiter)
 {
-	for (int i = 0; i < Text.length(); i++)
+	std::string Text = "";
+
+	for (std::string& Token : vTokens)
 	{
-		if (Text[i] != ' ')
-		{
-			return Text.substr(i, Text.length() - 1);
-		}
+		Text = Text + Token + delimiter;
 	}
-	return "";
-}
 
-std::string TrimRight(std::string Text)
-{
-	for (int i = Text.length() - 1; i >= 0; i--)
-	{
-		if (Text[i] != ' ')
-		{
-			return Text.substr(0, i + 1);
-		}
-	}
-	return "";
+	return Text.substr(0, Text.length() - delimiter.length());
 }
-
-std::string Trim(std::string Text)
-{
-	return TrimRight(TrimLeft(Text));
-}
-
 
 int main()
 {
-	std::string Text;
-	Text = "    Mohamed Askar    ";
+	std::vector <std::string> vTokens;
 
-	std::cout << std::left << std::setw(15) << "Trim left" << ": " << TrimLeft(Text) << "|\n";
-	std::cout << std::left << std::setw(15) << "Trim rigth" << ": " << TrimRight(Text) << "|\n";
-	std::cout << std::left << std::setw(15) << "Trim" << ": " << Trim(Text) << "|\n";
-	
+	vTokens.push_back("Mohamed");
+	vTokens.push_back("Ahmed");
+	vTokens.push_back("Mahmoud");
+	vTokens.push_back("Hessan");
+	vTokens.push_back("Askar");
+
+	std::cout << "Vector after join: \n";
+	std::cout << JoinString(vTokens, "\\") << "\n";
+
+	system("pause > 0");
 	return 0;
 }
