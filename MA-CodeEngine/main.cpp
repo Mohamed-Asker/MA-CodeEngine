@@ -2,59 +2,64 @@
 #include <iostream>
 #include <cctype>
 #include <string>
-#include <iomanip>
 #include <vector>
-
 
 std::string ReadText(const std::string& Msg)
 {
 	std::string Text;
 	std::cout << Msg << ": ";
 	std::getline(std::cin, Text);
-
 	return Text;
 }
 
-std::string JoinString(std::vector <std::string> vTokens,const  std::string& delimiter)
+std::vector <std::string> split(std::string text, const std::string& delimiter)
 {
-	std::string Text = "";
+	std::vector <std::string> vTokens;
+	std::string sWord;
+	int pos = 0;
 
-	for (std::string& Token : vTokens)
+	while ((pos = text.find(delimiter)) != std::string::npos)
 	{
-		Text = Text + Token + delimiter;
+		sWord = text.substr(0, pos);
+		if (sWord != "")
+		{
+			vTokens.push_back(sWord);
+		}
+		text.erase(0, pos + delimiter.length());
 	}
 
-	return Text.substr(0, Text.length() - delimiter.length());
+	if (text != delimiter)
+	{
+		vTokens.push_back(text);
+	}
+
+	return vTokens;
 }
 
-std::string JoinString(std::string Tokens[100], int ArrLength,const std::string& delimiter)
+std::string ReverseWords(std::vector <std::string> vTokens, const std::string& delimiter)
 {
-	std::string Text;
-	for (int i = 0; i < ArrLength; i++)
+	std::string text = "";
+	while (!vTokens.empty())
 	{
-		Text = Text + Tokens[i] + delimiter;
+		text = text + vTokens.back() + delimiter;
+		vTokens.pop_back();
 	}
-
-	return Text.substr(0, Text.length() - delimiter.length());
+	return text.substr(0, text.length() - delimiter.length());
 }
 
 int main()
 {
 	std::vector <std::string> vTokens;
-	std::string Tokens[5] = { "Mohamed" ,"Ahmed" ,"Mahmoud" ,"Hessan" ,"Askar" };
+	std::string text;
 
-	vTokens.push_back("Mohamed");
-	vTokens.push_back("Ahmed");
-	vTokens.push_back("Mahmoud");
-	vTokens.push_back("Hessan");
-	vTokens.push_back("Askar");
+	text = ReadText("Enter your text");
+	vTokens = split(text, " ");
+	text = ReverseWords(vTokens, " ");
 
-	std::cout << "Vector after join: \n";
-	std::cout << JoinString(vTokens, "\\") << "\n";
-
-	std::cout << "\nArray after join: \n";
-	std::cout << JoinString(Tokens, 5, "\\") << "\n";
+	std::cout << "\nString after reverseing words: \n";
+	std::cout << text << "|" << std::endl;
 
 	system("pause > 0");
+
 	return 0;
 }
