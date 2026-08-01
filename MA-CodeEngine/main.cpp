@@ -36,25 +36,28 @@ std::vector <std::string> split(std::string text, const std::string& delimiter)
 	return vTokens;
 }
 
-std::string ReverseWords(std::vector <std::string> vTokens, const std::string& delimiter)
+std::string ReverseWordsInString(std::string text1, const std::string& delimiter)
 {
-	std::string text = "";
-	while (!vTokens.empty())
+	std::string text2 = "";
+	std::vector <std::string > vTokens;
+	vTokens = split(text1, delimiter);
+
+	std::vector <std::string>::iterator iter = vTokens.end();
+
+	while (iter != vTokens.begin())
 	{
-		text = text + vTokens.back() + delimiter;
-		vTokens.pop_back();
+		iter--;
+		text2 = text2 + *iter + delimiter;
 	}
-	return text.substr(0, text.length() - delimiter.length());
+	return text2.substr(0, text2.length() - delimiter.length());
 }
 
 int main()
 {
-	std::vector <std::string> vTokens;
+	
 	std::string text;
-
 	text = ReadText("Enter your text");
-	vTokens = split(text, " ");
-	text = ReverseWords(vTokens, " ");
+	text = ReverseWordsInString(text, " ");
 
 	std::cout << "\nString after reverseing words: \n";
 	std::cout << text << "|" << std::endl;
