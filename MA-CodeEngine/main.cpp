@@ -1,57 +1,91 @@
-//My Solution.
 #include <iostream>
 #include <cctype>
 #include <string>
 #include <vector>
 
-std::string ReadText(const std::string& msg)
-{
-	std::string text;
-	std::cout << msg << ": ";
-	std::getline(std::cin, text);
 
-	return text;
-}
-
-std::string Replace(std::string text, int pos, int count, std::string NewText)
-{
-	std::string repText = "";
-
-	for (int i = 0; i < pos; i++)
-	{
-		repText += text.at(i);
-	}
-
-	repText += NewText;
-
-	for (int i = pos + count; i < text.length(); i++)
-	{
-		repText += text.at(i);
-	}
-
-	return repText;
-}
-
-std::string ReplaceAll(std::string text, const std::string& OldWord, const std::string& NewWord)
+std::vector <std::string> split(std::string text, const std::string& delimiter)
 {
 	int pos = 0;
-	while ((pos = text.find(OldWord)) != std::string::npos)
+	std::vector <std::string> vTokens;
+	std::string sWord;
+
+	while ((pos = text.find(delimiter)) != std::string::npos)
 	{
-		text = Replace(text, pos, OldWord.length(), NewWord);
-		pos += NewWord.length();
+		sWord = text.substr(0, pos);
+		if (sWord != "")
+		{
+			vTokens.push_back(sWord);
+		}
+		text.erase(0, pos + delimiter.length());
+	}
+
+	if (text != delimiter)
+	{
+		vTokens.push_back(text);
+	}
+
+	return vTokens;
+}
+
+std::string LowerAllString(std::string text)
+{
+	for (int i = 0; i < text.length(); i++)
+	{
+		text.at(i) = std::tolower(text.at(i));
 	}
 	return text;
+}
+
+std::string JoinString(std::vector <std::string> vTokens, const std::string& delimiter)
+{
+	std::string text = "";
+	for (std::string& token : vTokens)
+	{
+		text += (token + delimiter);
+	}
+	return text.substr(0, text.length() - delimiter.length());
+}
+
+
+std::string ReplaceWordInStringUsingSplit(std::string text, const  std::string& OldWord, const std::string& NewWord, bool MatchCase = true)
+{
+	std::vector <std::string> vTokens;
+	vTokens = split(text, " ");
+
+	for (std::string& token : vTokens)
+	{
+		if (MatchCase)
+		{
+			if (token == OldWord)
+			{
+				token = NewWord;
+			}
+		}
+		else
+		{
+			if (LowerAllString(token) == LowerAllString(OldWord))
+			{
+				token = NewWord;
+			}
+		}
+	}
+	return JoinString(vTokens, " ");
 }
 
 int main()
 {
-	std::string text = "Hi Egypt how are you in this days Egypt is very nice";
+	std::string text = "Welcome to spain , spain is a nice country";
+	std::string OldWord = "Spain";
+	std::string NewWord = "Egypt";
 
-	std::cout << "Text before replace: \n";
-	std::cout << text << "\n";
+	std::cout << "text before replace: \n" << text << "\n";
+
+	std::cout << "\nReplace with match case: \n";
+	std::cout << ReplaceWordInStringUsingSplit(text, OldWord, NewWord) << "\n";
 	
-	text = ReplaceAll(text, "Egypt", "Spain");
+	std::cout << "\nReplace with don't match case: \n";
+  	std::cout << ReplaceWordInStringUsingSplit(text, OldWord, NewWord, false) << "\n";
 
-	std::cout << "\nText after replace: \n";
-	std::cout << text << std::endl;
+	return 0;
 }
