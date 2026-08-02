@@ -5,28 +5,55 @@
 #include <vector>
 
 
-std::string RemovePunctuation(std::string text)
+struct stClientData
 {
-	std::string text2;
-	for (int i = 0; i < text.length(); i++)
-	{
-		if (!std::ispunct(text.at(i)))
-		{
-			text2 += text.at(i);
-		}
-	}
-	return text2;
+	std::string name = "";
+	std::string phone = "";
+	std::string PinCode = "";
+	std::string accNumber = "";
+	double accBalance = 0;
+};
+
+
+stClientData ReadNewClient()
+{
+	stClientData client;
+
+	std::cout << "Account number: ";
+	std::getline(std::cin, client.accNumber);
+	std::cout << "Pin code: ";
+	std::getline(std::cin, client.PinCode);
+	std::cout << "Name: ";
+	std::getline(std::cin, client.name);
+	std::cout << "Phone: ";
+	std::getline(std::cin, client.phone);
+	std::cout << "Account balance: ";
+	std::cin >> client.accBalance;
+
+	return client;
 }
+
+std::string ConvertRecodToLine(stClientData& client, const std::string& delimiter = " ")
+{
+	std::string text = "";
+
+	text += client.accNumber + delimiter;
+	text += client.PinCode + delimiter;
+	text += client.name + delimiter;
+	text += client.phone + delimiter;
+	text += std::to_string(client.accBalance);
+
+	return text;
+}
+
 int main()
 {
-	std::string text = "Welcome to spain, Spain is a nice countey;Spain is very amazing.";
 
-	std::cout << "Original text: \n";
-	std::cout << text << "\n";
+	stClientData Client;
+	Client = ReadNewClient();
+	
+	std::cout << "Client record for saving is: \n";
+	std::cout << ConvertRecodToLine(Client, "#//#") << "\n";
 
-	std::cout << "\ntext after remove punctuation: \n";
-	std::cout << RemovePunctuation(text) << "\n";
-
-	system("pause > 0");
 	return 0;
 }
