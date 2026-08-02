@@ -4,76 +4,86 @@
 #include <cctype>
 #include <vector>
 #include <iomanip>
+#include <fstream>
 
+const std::string& ClientsFileName = "ClientsData.txt";
 
-struct stClient
+struct stClientData
 {
 	std::string name = "";
 	std::string accNumber = "";
-	std::string pinCode = "";
 	std::string phone = "";
+	std::string PinCode = "";
 	double accBalance = 0;
 };
 
-std::vector <std::string> split(std::string& text, const std::string& delimiter)
+stClientData ReadClientData()
 {
-	std::vector <std::string> vTokens;
-	std::string sWord = "";
-	int pos = 0;
+	stClientData client;
 
-	while ((pos = text.find(delimiter)) != std::string::npos)
-	{
-		sWord = text.substr(0, pos);
-
-		if (sWord != "")
-		{
-			vTokens.push_back(sWord);
-		}
-
-		text.erase(0, pos + delimiter.length());
-	}
-
-	if (text != delimiter)
-	{
-		vTokens.push_back(text);
-	}
-	return vTokens;
-}
-
-stClient ConvertLineToRecord(std::string text, const std::string& delimiter = " ")
-{
-	stClient client;
-	std::vector <std::string > vClientData;
-	vClientData = split(text, delimiter);
-
-	client.accNumber = vClientData[0];
-	client.pinCode = vClientData[1];
-	client.name = vClientData[2];
-	client.phone = vClientData[3];
-	client.accBalance = std::stod(vClientData[4]);
+	std::cout << "Account Number: ";
+	std::getline(std::cin >> std::ws, client.accNumber);
+	std::cout << "Pin Code: ";
+	std::getline(std::cin, client.PinCode);
+	std::cout << "Name: ";
+	std::getline(std::cin, client.name);
+	std::cout << "Phone: ";
+	std::getline(std::cin, client.phone);
+	std::cout << "Account balance: ";
+	std::cin >> client.accBalance;
 
 	return client;
 }
 
-void PrintClientData(const stClient& client)
+std::string ConvertRecodToLine(const stClientData& client, const std::string& delimiter)
 {
-	std::cout << "\n\nThe followig is extracted client record:-";
-	std::cout << std::left << std::setw(15) << "\nAccount Number" << ": " << client.accNumber;
-	std::cout << std::left << std::setw(15) << "\nPin Code" << ": " << client.pinCode;
-	std::cout << std::left << std::setw(15) << "\nName" << ": " << client.name;
-	std::cout << std::left << std::setw(15) << "\nPhone" << ": " << client.phone;
-	std::cout << std::left << std::setw(15) << "\nAccent balance" << ": " << client.accBalance << std::endl;
+	std::string text;
+
+	text += client.accNumber + delimiter;
+	text += client.PinCode + delimiter;
+	text += client.name + delimiter;
+	text += client.phone + delimiter;
+	text += std::to_string(client.accBalance);
+
+	return text;
+}
+
+void AddClientsToFile(const std::string& text)
+{
+	std::fstream file;
+	file.open(ClientsFileName, std::ios::out | std::ios::app);
+
+	if (file.is_open())
+	{
+		file << text << "\n";
+		file.close();
+	}
+}
+
+void AddNewClient()
+{
+	stClientData client;
+	client = ReadClientData();
+	AddClientsToFile(ConvertRecodToLine(client, "#//#"));
+}
+
+void AddClients()
+{
+	char AddMore = 'Y';
+	do
+	{
+		system("cls");
+		AddNewClient();
+
+		std::cout << "\nClient added successfully.";
+		std::cout << "\nDo yo want to add more clients[Y,N]: ";
+		std::cin >> AddMore;
+
+	} while (std::tolower(AddMore) == 'y');
 }
 
 int main()
 {
-	stClient client;
-	std::string text = "A150#//#1234#//#Mohamed Askar#//#0145928125#//#20000";
-	client = ConvertLineToRecord(text, "#//#");
-
-	std::cout << "Line record is: \n" << text;
-	PrintClientData(client);
-
-
+	AddClients();
 	return 0;
 }
