@@ -1,68 +1,57 @@
-//My Solution
+//My Solution.
 #include <iostream>
 #include <cctype>
 #include <string>
 #include <vector>
 
-std::string ReadText(const std::string& Msg)
+std::string ReadText(const std::string& msg)
 {
-	std::string Text;
-	std::cout << Msg << ": ";
-	std::getline(std::cin, Text);
-	return Text;
+	std::string text;
+	std::cout << msg << ": ";
+	std::getline(std::cin, text);
+
+	return text;
 }
 
-std::vector <std::string> split(std::string text, const std::string& delimiter)
+std::string Replace(std::string text, int pos, int count, std::string NewText)
 {
-	std::vector <std::string> vTokens;
-	std::string sWord;
+	std::string repText = "";
+
+	for (int i = 0; i < pos; i++)
+	{
+		repText += text.at(i);
+	}
+
+	repText += NewText;
+
+	for (int i = pos + count; i < text.length(); i++)
+	{
+		repText += text.at(i);
+	}
+
+	return repText;
+}
+
+std::string ReplaceAll(std::string text, const std::string& OldWord, const std::string& NewWord)
+{
 	int pos = 0;
-
-	while ((pos = text.find(delimiter)) != std::string::npos)
+	while ((pos = text.find(OldWord)) != std::string::npos)
 	{
-		sWord = text.substr(0, pos);
-		if (sWord != "")
-		{
-			vTokens.push_back(sWord);
-		}
-		text.erase(0, pos + delimiter.length());
+		text = Replace(text, pos, OldWord.length(), NewWord);
+		pos += NewWord.length();
 	}
-
-	if (text != delimiter)
-	{
-		vTokens.push_back(text);
-	}
-
-	return vTokens;
-}
-
-std::string ReverseWordsInString(std::string text1, const std::string& delimiter)
-{
-	std::string text2 = "";
-	std::vector <std::string > vTokens;
-	vTokens = split(text1, delimiter);
-
-	std::vector <std::string>::iterator iter = vTokens.end();
-
-	while (iter != vTokens.begin())
-	{
-		iter--;
-		text2 = text2 + *iter + delimiter;
-	}
-	return text2.substr(0, text2.length() - delimiter.length());
+	return text;
 }
 
 int main()
 {
+	std::string text = "Hi Egypt how are you in this days Egypt is very nice";
+
+	std::cout << "Text before replace: \n";
+	std::cout << text << "\n";
 	
-	std::string text;
-	text = ReadText("Enter your text");
-	text = ReverseWordsInString(text, " ");
+	text = ReplaceAll(text, "Egypt", "Spain");
 
-	std::cout << "\nString after reverseing words: \n";
-	std::cout << text << "|" << std::endl;
-
-	system("pause > 0");
-
-	return 0;
+	std::cout << "\nText after replace: \n";
+	std::cout << text << std::endl;
 }
