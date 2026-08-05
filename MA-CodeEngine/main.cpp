@@ -1,10 +1,10 @@
 //My Soluation
 #include <iostream>
-#include <string >
 #include <cctype>
+#include <string>
+#include <iomanip>
 #include <vector>
 #include <fstream>
-#include <iomanip>
 
 const std::string ClientsFileName = "ClientsData.txt";
 const std::string delimiter = "#//#";
@@ -19,7 +19,7 @@ struct stClientData
 	bool MarkForDelete = false;
 };
 
-std::vector < std::string> split(std::string& line, const std::string delimiter = " ")
+std::vector <std::string> split(std::string& line,const std::string delimiter = " ")
 {
 	std::vector <std::string> vTokens;
 	std::string sWord = "";
@@ -42,24 +42,25 @@ std::vector < std::string> split(std::string& line, const std::string delimiter 
 	return vTokens;
 }
 
-stClientData ConvertLineToRecord(std::string& line, const std::string& delimiter = " ")
+
+stClientData ConvertLineToRecord(std::string& line,const std::string& delimiter = " ")
 {
 	stClientData client;
-	std::vector <std::string> vTokens;
-	vTokens = split(line, delimiter);
+	std::vector <std::string> vClientRecord;
+	vClientRecord = split(line, delimiter);
 
-	client.accNumber = vTokens.at(0);
-	client.PinCode = vTokens.at(1);
-	client.name = vTokens.at(2);
-	client.phone = vTokens.at(3);
-	client.accBalance = std::stod(vTokens.at(4));
-	
+	client.accNumber = vClientRecord[0];
+	client.PinCode = vClientRecord[1];
+	client.name = vClientRecord[2];
+	client.phone = vClientRecord[3];
+	client.accBalance = std::stod(vClientRecord[4]);
+
 	return client;
 }
 
-std::vector <stClientData> LoadDataFromFileToVector(const std::string& FileName)
+std::vector <stClientData> LoadDataFromFileToVector(const std::string& FileName) 
 {
-	std::vector <stClientData> vClientsData;
+	std::vector <stClientData> vClients;
 	std::fstream file;
 
 	file.open(FileName, std::ios::in);
@@ -71,11 +72,11 @@ std::vector <stClientData> LoadDataFromFileToVector(const std::string& FileName)
 		while (std::getline(file, line))
 		{
 			client = ConvertLineToRecord(line, ::delimiter);
-			vClientsData.push_back(client);
+			vClients.push_back(client);
 		}
 		file.close();
 	}
-	return vClientsData;
+	return vClients;
 }
 
 std::string ReadAccountNumber()
@@ -83,13 +84,13 @@ std::string ReadAccountNumber()
 	std::string accNumber;
 	std::cout << "Enter Account Number: ";
 	std::getline(std::cin, accNumber);
-	
+
 	return accNumber;
 }
 
-bool FindClientByAccountNumber(const std::vector <stClientData>& vClientsData, stClientData& client, const std::string& accNumber)
+bool FindClientByAccountNumber(std::vector <stClientData>& vClients, stClientData& client, const std::string& accNumber)
 {
-	for (stClientData tempClient : vClientsData)
+	for (const stClientData& tempClient : vClients)
 	{
 		if (tempClient.accNumber == accNumber)
 		{
@@ -102,25 +103,31 @@ bool FindClientByAccountNumber(const std::vector <stClientData>& vClientsData, s
 
 void PrintClientCard(const stClientData& client)
 {
-	std::cout << "\nThe following are the clients detalise: ";
+	std::cout << "\nThe following are the client details: ";
 	std::cout << std::left << std::setw(18) << "\nAccount Number" << ": " << client.accNumber;
 	std::cout << std::left << std::setw(18) << "\nPin Code" << ": " << client.PinCode;
 	std::cout << std::left << std::setw(18) << "\nName" << ": " << client.name;
 	std::cout << std::left << std::setw(18) << "\nPhone" << ": " << client.phone;
 	std::cout << std::left << std::setw(18) << "\nAccount Balance" << ": " << client.accBalance;
+	std::cout << std::endl;
 }
 
-bool MarkClientForDeleteByAccountNumber(std::vector <stClientData>& vClientsData, const std::string& accNumber)
+stClientData ChangeClientRecord(const std::string& accNumber)
 {
-	for (stClientData& tempClient : vClientsData)
-	{
-		if (tempClient.accNumber == accNumber)
-		{
-			tempClient.MarkForDelete = true;
-			return true;
-		}
-	}
-	return false;
+	stClientData client;
+
+	client.accNumber = accNumber;
+
+	std::cout << "Enter new pin code        : ";
+	std::getline(std::cin, client.PinCode);
+	std::cout << "Enter new name            : ";
+	std::getline(std::cin, client.name);
+	std::cout << "Enter new phone           : ";
+	std::getline(std::cin, client.phone);
+	std::cout << "Enter new Account balance : ";
+	std::cin >> client.accBalance;
+
+	return client;
 }
 
 std::string ConvertRecordToLine(const stClientData& client, const std::string& delimiter)
@@ -136,63 +143,77 @@ std::string ConvertRecordToLine(const stClientData& client, const std::string& d
 	return line;
 }
 
-std::vector <stClientData> SaveVectorToFile(std::vector <stClientData>& vClientsData, const std::string& FileName)
+std::vector <stClientData> SaveVectorToFile(std::vector <stClientData>& vClients,const std::string& FileName)
 {
-	std::string DataLine;
 	std::fstream file;
-	file.open(FileName, std::ios::out);
+	std::string DataLine;
 
+	file.open(FileName, std::ios::out);
 	if (file.is_open())
 	{
-		for (const stClientData& tempClient : vClientsData)
+		for (const stClientData client : vClients)
 		{
-			if (tempClient.MarkForDelete == false)
+			if (client.MarkForDelete == false)
 			{
-				DataLine = ConvertRecordToLine(tempClient, ::delimiter);
+				DataLine = ConvertRecordToLine(client, ::delimiter);
 				file << DataLine << std::endl;
 			}
 		}
 		file.close();
 	}
-	return vClientsData;
+	return vClients;
 }
 
-bool DeleteClientByAccountNumber(std::vector <stClientData>& vClientsData, const std::string& accNumber)
+bool UpdateClientByAccountNumber(std::vector <stClientData>& vClients, const std::string& accNumber)
 {
 	stClientData client;
 	char answer;
-	
-	if (FindClientByAccountNumber(vClientsData, client, accNumber))
+
+	if (FindClientByAccountNumber(vClients, client, accNumber))
 	{
 		PrintClientCard(client);
-		std::cout << "\n\nAre you sure you want to delete thie client[Y,N]: ";
+		std::cout << "\nAre you sure you want to update this client[Y,N]: ";
 		std::cin >> answer;
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		if (std::tolower(answer) == 'y')
 		{
-			MarkClientForDeleteByAccountNumber(vClientsData, accNumber);
-			SaveVectorToFile(vClientsData, ::ClientsFileName);
-			vClientsData = LoadDataFromFileToVector(::ClientsFileName);
-
-			std::cout << "Clients deleted successfull." << std::endl;
+			for (stClientData& tempClient : vClients)
+			{
+				if (tempClient.accNumber == accNumber)
+				{
+					tempClient = ChangeClientRecord(accNumber);
+					break;
+				}
+			}
+			SaveVectorToFile(vClients, ::ClientsFileName);
+			std::cout << "\nClient updated successfully. " << std::endl;
 			return true;
 		}
-
+		return false;
 	}
 	else
 	{
-		std::cout << "Client with account number not found." << std::endl;
+		std::cout << "Client with account number (" << accNumber << ") not found." << std::endl;
 		return false;
 	}
-
 }
 
 int main()
 {
-	std::vector <stClientData> vClientsData;
-	vClientsData = LoadDataFromFileToVector(ClientsFileName);
-	std::string accNumber = ReadAccountNumber();
-	DeleteClientByAccountNumber(vClientsData, accNumber);
+	std::vector <stClientData> vClients;
+	vClients = LoadDataFromFileToVector(::ClientsFileName);
+	char answer;
+	do 
+	{
+		std::string accNumber = ReadAccountNumber();
+		UpdateClientByAccountNumber(vClients, accNumber);
+		std::cout << "Do you want to update another client: ";
+		std::cin >> answer;
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		system("cls");
+
+	} while (answer == 'y' || answer == 'Y');
 
 	return 0;
 }
